@@ -14,7 +14,7 @@ env-cleanup:
 	@read -p "Do you want to clean up your environment files? You may lose your data. [y/N]: " ans; \
 	if [ "$$ans" == "y" ]; then \
 		docker compose down postgres && \
-		sudo rm -rf ~/docker-volumes/messanger-pgdata && \
+		sudo rm -rf ~/.docker-volumes/messanger-pgdata && \
 		echo "Environment files cleaned up successfuly"; \
 	else \
 		echo "Cleaning of environment files canceled"; \
@@ -68,10 +68,10 @@ messanger-run:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
-	go run ${PROJECT_ROOT}/cmd/server/main.go
+	go run ${PROJECT_ROOT}/cmd/server/main.go 
 
 messanger-deploy:
-	@docker compose up -d --build messanger
+	@docker compose up -d  --build messanger
 
 messanger-undeploy:
 	@docker compose down messanger
@@ -79,6 +79,9 @@ messanger-undeploy:
 # client-side
 client-run:
 	@go run ${PROJECT_ROOT}/cmd/client/main.go
+
+lint:
+	@golangci-lint run ./...
 
 # other
 ps:
