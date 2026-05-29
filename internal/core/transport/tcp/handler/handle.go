@@ -18,7 +18,7 @@ func (h *Handler) Handle(
 	ctx context.Context,
 	conn net.Conn,
 ) {
-	defer conn.Close()
+	const ERR = "ERR "
 
 	var (
 		session       *domain.User
@@ -32,12 +32,19 @@ func (h *Handler) Handle(
 	}()
 
 	write := func(msg string) {
-		conn.Write([]byte(msg))
+		_, _ = conn.Write([]byte(msg))
 	}
 
 	writeln := func(msg string) {
 		write(msg + "\n")
 	}
+
+	defer func() {
+		if err := conn.Close(); err != nil {
+			writeln(ERR + "failed to close connection")
+			h.log.Warn("failed to close connection", zap.Error(err))
+		}
+	}()
 
 	writeln("Welcome! Use /register <username> <password> or /login <username> <password>\n")
 	write("(/help) " + help())
@@ -72,14 +79,14 @@ func (h *Handler) Handle(
 
 		case "/register":
 			if session != nil {
-				writeln("ERR " + "you already have an account")
+				writeln(ERR + "you already have an account")
 				continue
 			}
 
 			user, err := h.usersHandler.Register(ctx, args)
 			if err != nil {
 				h.log.Warn("register failed", zap.Error(err))
-				writeln("ERR " + err.Error())
+				writeln(ERR + err.Error())
 				continue
 			}
 
@@ -88,14 +95,14 @@ func (h *Handler) Handle(
 
 		case "/login":
 			if session != nil {
-				writeln("ERR " + "you already have an account")
+				writeln(ERR + "you already have an account")
 				continue
 			}
 
 			user, err := h.usersHandler.Login(ctx, args)
 			if err != nil {
 				h.log.Warn("login failed", zap.Error(err))
-				writeln("ERR " + err.Error())
+				writeln(ERR + err.Error())
 				continue
 			}
 
@@ -104,14 +111,14 @@ func (h *Handler) Handle(
 
 		case "/join":
 			if session == nil {
-				writeln("ERR not authenticated - use /register or /login (/help for guide)")
+				writeln(ERR + "not authenticated - use /register or /login (/help for guide)")
 				continue
 			}
 
 			room, err := h.roomsHandler.JoinRoom(ctx, session.ID, args)
 			if err != nil {
 				h.log.Warn("failed to join in room", zap.Error(err))
-				writeln("ERR " + err.Error())
+				writeln(ERR + err.Error())
 				continue
 			}
 
@@ -129,7 +136,7 @@ func (h *Handler) Handle(
 			rooms, err := h.roomsHandler.ListRooms(ctx)
 			if err != nil {
 				h.log.Error("failed to list rooms", zap.Error(err))
-				writeln("ERR " + err.Error())
+				writeln(ERR + err.Error())
 				continue
 			}
 
@@ -139,12 +146,12 @@ func (h *Handler) Handle(
 
 		case "/history":
 			if session == nil {
-				writeln("ERR not authenticated - use /register or /login (/help for guide)")
+				writeln(ERR + "not authenticated - use /register or /login (/help for guide)")
 				continue
 			}
 
 			if currentRoomID == "" {
-				writeln("ERR not in room - use /join")
+				writeln(ERR + "not in room - use /join")
 				continue
 			}
 
@@ -154,7 +161,7 @@ func (h *Handler) Handle(
 			)
 			if err != nil {
 				h.log.Error("failed to get message from room", zap.Error(err))
-				writeln("ERR " + err.Error())
+				writeln(ERR + err.Error())
 				continue
 			}
 
@@ -164,12 +171,12 @@ func (h *Handler) Handle(
 
 		case "/msg":
 			if session == nil {
-				writeln("ERR not authenticated - use /register or /login (/help for guide)")
+				writeln(ERR + "not authenticated - use /register or /login (/help for guide)")
 				continue
 			}
 
 			if currentRoomID == "" {
-				writeln("ERR not in a room - use /join")
+				writeln(ERR + "not in a room - use /join")
 				continue
 			}
 
@@ -181,7 +188,7 @@ func (h *Handler) Handle(
 			)
 			if err != nil {
 				h.log.Error("failed to send message", zap.Error(err))
-				writeln("ERR " + err.Error())
+				writeln(ERR + err.Error())
 				continue
 			}
 
@@ -194,7 +201,7 @@ func (h *Handler) Handle(
 			h.hub.SendMessage(currentRoomID, []byte(payload))
 
 		default:
-			writeln("ERR unknown command: " + cmd)
+			writeln(ERR + "unknown command: " + cmd)
 		}
 	}
 }

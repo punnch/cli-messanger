@@ -1,5 +1,6 @@
 services:
   messanger:
+    container_name: cli-messanger
     build:
       context: ${PROJECT_ROOT}
       dockerfile: cmd/server/Dockerfile

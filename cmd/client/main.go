@@ -17,7 +17,11 @@ func main() {
 	if err != nil {
 		panic("failed to connect to the server: " + err.Error())
 	}
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			fmt.Println("failed to close connection:", err)
+		}
+	}()
 
 	go func() {
 		buf := make([]byte, 1024)
@@ -33,6 +37,9 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		fmt.Fprintln(conn, scanner.Text())
+		_, err := fmt.Fprintln(conn, scanner.Text())
+		if err != nil {
+			fmt.Println("failed to show message from application:", err)
+		}
 	}
 }

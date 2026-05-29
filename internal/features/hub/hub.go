@@ -59,12 +59,12 @@ func (h *Hub) Unregister(
 	}
 }
 
-// Run() — one goroutine, fans out to all conns in a room
+// Run() — one goroutine, fans out to all conns in a room.
 func (h *Hub) Run() {
 	for msg := range h.Broadcast {
 		h.mu.RLock()
 		for _, conn := range h.rooms[msg.RoomID] {
-			conn.Write(msg.Payload)
+			_, _ = conn.Write(msg.Payload)
 		}
 		h.mu.RUnlock()
 	}

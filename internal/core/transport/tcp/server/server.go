@@ -40,7 +40,9 @@ func (s *TCPServer) Run(ctx context.Context) error {
 
 	go func() {
 		<-ctx.Done()
-		ln.Close()
+		if err := ln.Close(); err != nil {
+			s.log.Error("close connection", zap.Error(err))
+		}
 	}()
 
 	for {

@@ -9,7 +9,7 @@ import (
 	"github.com/punnch/cli-messanger/internal/core/domain"
 )
 
-// /msg <message>
+// /msg <message>.
 func (h *MessagesTCPHandler) SendMessage(
 	ctx context.Context,
 	userID uuid.UUID,

@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// /join <room>
+// /join <room>.
 func (h *RoomsTCPHandler) JoinRoom(
 	ctx context.Context,
 	userID uuid.UUID,

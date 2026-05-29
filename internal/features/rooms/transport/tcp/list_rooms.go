@@ -7,7 +7,7 @@ import (
 	"github.com/punnch/cli-messanger/internal/core/domain"
 )
 
-// /rooms
+// /rooms.
 func (h *RoomsTCPHandler) ListRooms(
 	ctx context.Context,
 ) ([]domain.Room, error) {

@@ -8,7 +8,7 @@ import (
 	core_postgres_pool "github.com/punnch/cli-messanger/internal/core/repository/postgres/pool"
 )
 
-// Room
+// Room.
 type RoomModel struct {
 	ID        uuid.UUID
 	Name      string
@@ -41,17 +41,10 @@ func (m *RoomModel) Scan(row core_postgres_pool.Row) error {
 	)
 }
 
-// Member
+// Member.
 type MemberModel struct {
 	UserID uuid.UUID
 	RoomID uuid.UUID
-}
-
-func memberModelToDomain(model MemberModel) domain.Member {
-	return domain.NewMember(
-		model.UserID,
-		model.RoomID,
-	)
 }
 
 func (m *MemberModel) Scan(row core_postgres_pool.Row) error {

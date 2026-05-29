@@ -35,4 +35,3 @@ func NewConfigMust() *Config {
 
 	return cfg
 }
-
