@@ -25,9 +25,6 @@ linters:
     gocognit:
       min-complexity: 15
 
-    goimports:
-      local-prefixes: github.com/punnch/cli-messanger  # your module path
-
 issues:
   max-issues-per-linter: 50
   max-same-issues: 3
