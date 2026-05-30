@@ -21,12 +21,12 @@ linters:
     # --- style ---
     - godot           # comments should end with a period
 
-linters-settings:
-  gocognit:
-    min-complexity: 15
+  settings:
+    gocognit:
+      min-complexity: 15
 
-  goimports:
-    local-prefixes: github.com/punnch/cli-messanger  # your module path
+    goimports:
+      local-prefixes: github.com/punnch/cli-messanger  # your module path
 
 issues:
   max-issues-per-linter: 50
